@@ -834,22 +834,22 @@
             });
         }
 
-        async function exportToPDF() {
-            if (productData.length === 0) {
-                showToast("No products to export!", "alert-circle");
-                return;
-            }
+    async function exportToPDF() {
+    const element = document.getElementById("product-grid");
 
-            showToast("Generating beautiful PDF...", "loader");
+    const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true
+    });
 
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
+    const imgData = canvas.toDataURL("image/png");
 
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
+    pdf.save("catalogue.pdf");
+        }
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const margins = { top: 15, left: 15, right: 15, bottom: 15 };
