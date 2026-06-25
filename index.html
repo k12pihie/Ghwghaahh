@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CozyStitches - Crochet Catalogue</title>
+    <title>Crochet NovaStudio - Premium Handmade Catalogue</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,11 +14,11 @@
                 extend: {
                     colors: {
                         brand: {
-                            light: '#fda4af', // Rose-300
-                            DEFAULT: '#e11d48', // Rose-600
-                            dark: '#9f1239', // Rose-800
-                            cozy: '#fdf6f0', // Warm cream background
-                            cozyDark: '#1c1917', // Stone-900 dark background
+                            light: '#f0d9ff',
+                            DEFAULT: '#a855f7',
+                            dark: '#7c3aed',
+                            bg: '#faf8ff',
+                            bgDark: '#1a1225',
                         }
                     }
                 }
@@ -25,10 +26,19 @@
         }
     </script>
     
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -36,31 +46,38 @@
             background: transparent;
         }
         .dark ::-webkit-scrollbar-track {
-            background: #292524;
+            background: #2d1b4e;
         }
         ::-webkit-scrollbar-thumb {
-            background: #f3e8ff;
+            background: #d8b4fe;
             border-radius: 9999px;
         }
         .dark ::-webkit-scrollbar-thumb {
-            background: #57534e;
+            background: #6d28d9;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #fda4af;
+            background: #a855f7;
         }
-        
+
         body {
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        
+
+        /* Product Image Container */
         .image-container {
             position: relative;
-            padding-bottom: 100%; 
+            padding-bottom: 100%;
             overflow: hidden;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
         }
+        .dark .image-container {
+            background: linear-gradient(135deg, #2d1b4e 0%, #3d2463 100%);
+        }
+
         .image-container img {
             position: absolute;
             top: 0;
@@ -70,187 +87,279 @@
             object-fit: cover;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .product-card:hover .image-container img {
-            transform: scale(1.05);
+            transform: scale(1.08);
+        }
+
+        /* Product Card Animation */
+        .product-card {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth Transitions */
+        .transition-smooth {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Badge Styling */
+        .badge-premium {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Toast Notification */
+        .toast {
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-[#faf6f0] text-stone-800 dark:bg-stone-900 dark:text-stone-100 transition-colors duration-200">
+<body class="bg-brand-bg text-slate-900 dark:bg-brand-bgDark dark:text-slate-100 transition-colors duration-200">
 
-    <header class="w-full bg-white dark:bg-stone-800 border-b border-rose-100 dark:border-stone-700 shadow-sm z-50 flex-shrink-0">
-        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <!-- HEADER -->
+    <header class="w-full bg-white dark:bg-slate-900 border-b border-purple-100 dark:border-purple-900/30 shadow-sm z-50 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <!-- Top Section: Logo & Controls -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 
-                <!-- Logo & Brand Controls -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="bg-rose-500 text-white p-2 rounded-xl shadow-md shadow-rose-205 dark:shadow-none">
-                            <i data-lucide="scissors" class="w-6 h-6 rotate-45"></i>
+                <!-- Logo & Branding -->
+                <div class="flex items-center justify-between lg:justify-start">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-2.5 rounded-xl shadow-lg">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-rose-500 to-amber-600 bg-clip-text text-transparent dark:from-rose-400 dark:to-amber-400">CozyStitc[...]
-                            <span class="block text-[10px] font-semibold tracking-wider uppercase text-rose-400 dark:text-rose-300">Crochet Catalogue</span>
+                            <h1 class="text-lg font-bold bg-gradient-to-r from-purple-600 to-purple-500 dark:from-purple-400 dark:to-purple-300 bg-clip-text text-transparent">
+                                Crochet NovaStudio
+                            </h1>
+                            <p class="text-xs font-semibold text-purple-500 dark:text-purple-400">Premium Handmade Catalogue</p>
                         </div>
                     </div>
-                    
-                    <!-- Quick Actions for Mobile -->
-                    <div class="flex items-center gap-1.5 md:hidden">
-                        <button onclick="toggleSheetsPanel()" class="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100" title="Google Shee[...]
-                            <i data-lucide="table-2" class="w-4 h-4"></i>
+
+                    <!-- Mobile Quick Actions -->
+                    <div class="flex items-center gap-1 md:hidden">
+                        <button onclick="toggleSheetsPanel()" class="p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400" title="Sync Sheet">
+                            <i data-lucide="database" class="w-5 h-5"></i>
                         </button>
-                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-200" title="Toggle Theme">
-                            <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="exportToPDF()" class="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100" title="Export PDF">
-                            <i data-lucide="file-down" class="w-4 h-4"></i>
+                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Toggle Theme">
+                            <i id="theme-icon-mobile" data-lucide="moon" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 flex-grow max-w-2xl lg:mx-4">
-                    <!-- Live Search Bar -->
+                <!-- Search & Filter Section -->
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 flex-grow max-w-2xl lg:mx-6">
+                    <!-- Search Input -->
                     <div class="relative sm:col-span-7">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-stone-400">
-                            <i data-lucide="search" class="w-4 h-4"></i>
-                        </span>
-                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Search warm hats, plushies, tags..." 
-                            class="w-full pl-9 pr-4 py-2 bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 text-stone-900 [...]
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            oninput="handleSearch()" 
+                            placeholder="Search products..." 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-slate-900 dark:text-white placeholder-slate-500"
+                        >
                     </div>
-                    <!-- Category Selector -->
-                    <div class="sm:col-span-5 relative">
-                        <select id="category-filter" onchange="handleFilter()" 
-                            class="w-full pl-3 pr-8 py-2 bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl text-sm focus:ring-2 focus:ring-rose-400 text-stone-900 [...]
-                            <option value="all">All Handmade Items</option>
-                            <option value="plushies">Amigurumi & Plushies</option>
-                            <option value="apparel">Cozy Apparel & Sweaters</option>
-                            <option value="accessories">Hats & Accessories</option>
-                            <option value="home">Home Decor & Coasters</option>
+
+                    <!-- Category Filter -->
+                    <div class="relative sm:col-span-5">
+                        <select 
+                            id="category-filter" 
+                            onchange="handleFilter()" 
+                            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-slate-900 dark:text-white appearance-none"
+                        >
+                            <option value="all">All Products</option>
+                            <option value="amigurumi">Amigurumi & Plushies</option>
+                            <option value="apparel">Apparel & Sweaters</option>
+                            <option value="accessories">Accessories</option>
+                            <option value="home">Home Decor</option>
                         </select>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-400">
-                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                        </span>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
-                <!-- Desktop Controls Header Section -->
+                <!-- Desktop Controls -->
                 <div class="hidden md:flex items-center gap-2">
-                    <!-- Google Sheets Connect Button -->
-                    <button onclick="toggleSheetsPanel()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50 dar[...]
-                        <i data-lucide="table-2" class="w-4 h-4"></i>
-                        <span>Sync Google Sheet</span>
+                    <button 
+                        onclick="toggleSheetsPanel()" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-smooth"
+                        title="Connect Google Sheet"
+                    >
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                        <span>Sync Sheet</span>
                     </button>
 
-                    <!-- Hide/Show Price Toggle -->
-                    <button onclick="togglePriceVisibility()" id="price-toggle-btn" 
-                        class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-50 dark:hover:bg[...]
-                        <i id="price-icon" data-lucide="eye-off" class="w-4 h-4 text-stone-500"></i>
+                    <button 
+                        onclick="togglePriceVisibility()" 
+                        id="price-toggle-btn" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-smooth"
+                    >
+                        <i id="price-icon" data-lucide="eye-off" class="w-4 h-4"></i>
                         <span id="price-toggle-text">Hide Prices</span>
                     </button>
 
-                    <!-- Dark mode toggle -->
-                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-stone-100 dark:bg-stone-750 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700 transition">
-                        <i id="theme-icon-desktop" data-lucide="moon" class="w-4 h-4"></i>
+                    <button 
+                        onclick="toggleDarkMode()" 
+                        class="p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-smooth"
+                    >
+                        <i id="theme-icon-desktop" data-lucide="moon" class="w-5 h-5"></i>
                     </button>
 
-                    <!-- PDF Generator trigger -->
-                    <button onclick="exportToPDF()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-rose-500 rounded-xl hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose[...]
-                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <button 
+                        onclick="exportToPDF()" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg hover:from-purple-700 hover:to-purple-600 transition-smooth shadow-md"
+                    >
+                        <i data-lucide="file-pdf" class="w-4 h-4"></i>
                         <span>Export PDF</span>
                     </button>
                 </div>
-
             </div>
 
-            <div id="sheets-sync-panel" class="hidden mt-4 p-4 rounded-xl bg-stone-50 dark:bg-stone-850 border border-stone-200 dark:border-stone-700 transition-all duration-300">
-                <div class="flex items-start justify-between mb-2">
+            <!-- Google Sheets Sync Panel -->
+            <div id="sheets-sync-panel" class="hidden mt-4 p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 transition-all duration-300">
+                <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <h4 class="font-bold text-sm text-stone-900 dark:text-stone-100">Connect Google Sheets Database</h4>
+                        <span class="flex h-2.5 w-2.5 rounded-full bg-purple-500 animate-pulse"></span>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-slate-100">Connect Google Sheet Database</h4>
                     </div>
-                    <button onclick="toggleSheetsPanel()" class="text-stone-400 hover:text-stone-650 dark:hover:text-stone-205">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                    <button onclick="toggleSheetsPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-                <p class="text-xs text-stone-500 dark:text-stone-400 mb-3 leading-relaxed">
-                    Convert this catalog dynamically by linking a Google Sheet or Apps Script Web App! 
-                    <strong>Steps:</strong> Create a sheet with columns: <code>name</code>, <code>category</code>, <code>price</code>, <code>stock</code>, <code>image</code>, <code>description</code>,[...]
+                <p class="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    Create a Google Sheet with columns: <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">name</code>, 
+                    <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">category</code>, 
+                    <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">price</code>, 
+                    <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">stock</code>, 
+                    <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">image</code>, 
+                    <code class="bg-white dark:bg-slate-800 px-2 py-1 rounded text-purple-600 dark:text-purple-400 font-mono">description</code>. Publish and paste the Apps Script URL.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <input type="text" id="sheets-csv-url" placeholder="Paste Sheets CSV URL or Apps Script URL here..." 
-                        class="flex-grow px-3 py-1.5 text-xs bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 [...]
+                    <input 
+                        type="text" 
+                        id="sheets-csv-url" 
+                        placeholder="Paste Apps Script Web App URL here..." 
+                        class="flex-grow px-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
                     <div class="flex gap-2">
-                        <button onclick="importFromGoogleSheets()" class="px-4 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shrink-0">
-                            Apply Sheet Data
+                        <button 
+                            onclick="importFromGoogleSheets()" 
+                            class="px-5 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-smooth whitespace-nowrap"
+                        >
+                            Sync Now
                         </button>
-                        <button onclick="clearSheetsData()" class="px-3 py-1.5 text-xs font-medium text-stone-650 dark:text-stone-305 bg-stone-200 dark:bg-stone-700 hover:bg-stone-300 dark:hover:bg-st[...]
-                            Clear Sync URL
+                        <button 
+                            onclick="clearSheetsData()" 
+                            class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg transition-smooth"
+                        >
+                            Clear
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Mobile Sub-Control Bar -->
-            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100 dark:border-stone-750 md:hidden">
-                <button onclick="togglePriceVisibility()" id="price-toggle-btn-mobile" 
-                    class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300">
+            <!-- Mobile Sort & Filters Bar -->
+            <div class="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 md:hidden">
+                <button 
+                    onclick="togglePriceVisibility()" 
+                    id="price-toggle-btn-mobile" 
+                    class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-smooth"
+                >
                     <i id="price-icon-mobile" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
-                    <span id="price-toggle-text-mobile">Hide Prices</span>
+                    <span id="price-toggle-text-mobile">Hide</span>
                 </button>
 
-                <div class="flex gap-2">
-                    <select id="sort-select" onchange="handleSort()" class="bg-transparent border-0 text-xs font-semibold text-stone-600 dark:text-stone-400 focus:ring-0 cursor-pointer outline-none">
+                <select 
+                    id="sort-select-mobile" 
+                    onchange="handleSort()" 
+                    class="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-700 dark:text-slate-300"
+                >
+                    <option value="default">Default</option>
+                    <option value="price-asc">Price ↑</option>
+                    <option value="price-desc">Price ↓</option>
+                    <option value="stock-desc">In Stock</option>
+                    <option value="popular">Popular</option>
+                </select>
+
+                <button 
+                    onclick="exportToPDF()" 
+                    class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-smooth"
+                    title="Export PDF"
+                >
+                    <i data-lucide="file-pdf" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- Desktop Sort & Results Bar -->
+            <div class="hidden md:flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50">
+                        <span id="results-badge">Loading...</span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                        <i data-lucide="sort-asc" class="w-4 h-4"></i> Sort:
+                    </span>
+                    <select 
+                        id="sort-select-desktop" 
+                        onchange="handleSort()" 
+                        class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white"
+                    >
                         <option value="default">Default Order</option>
                         <option value="price-asc">Price: Low to High</option>
                         <option value="price-desc">Price: High to Low</option>
                         <option value="stock-desc">In Stock First</option>
+                        <option value="popular">Most Popular</option>
                     </select>
                 </div>
             </div>
 
-        </div>
-    </header>
-
-    <main class="flex-grow overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            
-            <!-- Sorting & Metrics Bar (Desktop) -->
-            <div class="hidden md:flex items-center justify-between mb-6">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 border border-rose-100 dark:border-rose-950/20" id="result[...]
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-sm text-stone-500 dark:text-stone-400 flex items-center gap-1">
-                        <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i> Sort by:
-                    </span>
-                    <select id="sort-select-desktop" onchange="handleSort()" class="bg-white dark:bg-stone-850 border border-stone-200 dark:border-stone-700 rounded-xl text-sm px-3 py-1.5 focus:ring-2[...]
-                        <option value="default">Default Catalogue Order</option>
-                        <option value="price-asc">Price: Low to High</option>
-                        <option value="price-desc">Price: High to Low</option>
-                        <option value="stock-desc">Stock Volume: High to Low</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- PRODUCT CATALOG GRID -->
+            <!-- Product Grid -->
             <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Dynamic cards and loaders render inside here -->
+                <!-- Products render here -->
             </div>
 
-            <!-- EMPTY STATE TEMPLATE (Initially visible because the database starts clean) -->
+            <!-- Empty State -->
             <div id="empty-state" class="flex flex-col items-center justify-center py-16 px-4 text-center">
-                <div class="bg-rose-50 dark:bg-stone-800 p-5 rounded-full text-rose-500 dark:text-rose-400 mb-5 animate-pulse">
-                    <i data-lucide="table-2" class="w-14 h-14"></i>
+                <div class="bg-purple-100 dark:bg-purple-900/30 p-6 rounded-full text-purple-500 dark:text-purple-400 mb-6">
+                    <i data-lucide="package" class="w-16 h-16"></i>
                 </div>
-                <h3 class="text-xl font-extrabold text-stone-900 dark:text-white">Your Catalogue is Ready!</h3>
-                <p class="text-stone-500 dark:text-stone-400 text-sm mt-2 max-w-lg mx-auto leading-relaxed">
-                    This catalogue starts empty so you can build it yourself. Connect your dynamic Google Sheet spreadsheet using the setup panel to instantly display your beautiful crochet items.
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Catalog is Empty</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm max-w-md mx-auto mb-8">
+                    Connect your Google Sheet to display your beautiful handmade products. Follow the setup guide to get started!
                 </p>
-                <div class="mt-6 flex flex-wrap justify-center gap-3">
-                    <button onclick="toggleSheetsPanel()" class="px-5 py-2.5 text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition shadow-md shadow-rose-100 dark:shadow-[...]
-                        Connect Google Sheet Now
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button 
+                        onclick="toggleSheetsPanel()" 
+                        class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg hover:from-purple-700 hover:to-purple-600 transition-smooth shadow-md"
+                    >
+                        <i data-lucide="plug" class="w-4 h-4 inline mr-2"></i>
+                        Connect Sheet
                     </button>
-                    <button onclick="loadSampleDrafts()" class="px-5 py-2.5 text-sm font-semibold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-sto[...]
-                        Load Quick Sample Data
+                    <button 
+                        onclick="loadSampleDrafts()" 
+                        class="px-6 py-3 text-sm font-semibold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-smooth"
+                    >
+                        <i data-lucide="sparkles" class="w-4 h-4 inline mr-2"></i>
+                        Load Demo
                     </button>
                 </div>
             </div>
@@ -258,14 +367,17 @@
         </div>
     </main>
 
-    <!-- NOTIFICATION TOAST -->
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 bg-stone-950 text-white dark:bg-white dark:text-slate-950 px-4 py-3 rounded-xl shadow-2xl transition-all duration-3[...]
-        <i id="toast-icon" data-lucide="check" class="w-4 h-4 text-rose-400 dark:text-rose-600"></i>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-32 opacity-0 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 toast z-50">
+        <i id="toast-icon" data-lucide="check" class="w-5 h-5"></i>
         <span id="toast-msg">Success!</span>
     </div>
 
-    <!-- SCRIPT SECTION -->
+    <!-- JAVASCRIPT -->
     <script>
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
         let productData = [];
         let showPrices = true;
         let isDarkMode = false;
@@ -273,33 +385,43 @@
         let selectedCategory = "all";
         let activeSort = "default";
 
+        // DOM References
         const productGrid = document.getElementById('product-grid');
         const emptyState = document.getElementById('empty-state');
         const resultsBadge = document.getElementById('results-badge');
-        const priceToggleText = document.getElementById('price-toggle-text');
-        const priceToggleTextMobile = document.getElementById('price-toggle-text-mobile');
-        const priceIcon = document.getElementById('price-icon');
-        const priceIconMobile = document.getElementById('price-icon-mobile');
         const sheetsSyncPanel = document.getElementById('sheets-sync-panel');
 
-        // Auto-run connection on boot
+        // ============================================
+        // INITIALIZATION
+        // ============================================
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                toggleDarkMode(true);
-            }
-            
-            // Assign your brand new Apps Script URL as the permanent template default
-            let savedUrl = localStorage.getItem('cozy_sheets_url');
-            if (!savedUrl) {
-                savedUrl = "https://script.google.com/macros/s/AKfycbujQiNQxe-JNNgstRzK8LhI3ImS6qp3eNyl3kl5ZBHFmTG-U0EPcTGds8011bzGBOzEQ/exec";
-                localStorage.setItem('cozy_sheets_url', savedUrl);
-            }
-            
-            document.getElementById('sheets-csv-url').value = savedUrl;
-            importFromGoogleSheets(true); 
+            initializeDarkMode();
+            initializeSheets();
             lucide.createIcons();
         });
 
+        function initializeDarkMode() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                toggleDarkMode(true);
+            }
+        }
+
+        function initializeSheets() {
+            const SHEET_URL = "https://script.google.com/macros/s/AKfycbzujQiNQxe-JNNgstRzK8LhI3ImS6qp3eNyl3kl5ZBHFmTG-U0EPcTGds8011bzGBOzEQ/exec";
+            
+            let savedUrl = localStorage.getItem('nova_sheets_url');
+            if (!savedUrl) {
+                savedUrl = SHEET_URL;
+                localStorage.setItem('nova_sheets_url', savedUrl);
+            }
+
+            document.getElementById('sheets-csv-url').value = savedUrl;
+            importFromGoogleSheets(true);
+        }
+
+        // ============================================
+        // SHEET MANAGEMENT
+        // ============================================
         function toggleSheetsPanel() {
             sheetsSyncPanel.classList.toggle('hidden');
         }
@@ -310,53 +432,61 @@
             let inQuotes = false;
 
             for (let i = 0; i < text.length; i++) {
-                let c = text[i];
-                let next = text[i+1];
+                const c = text[i];
+                const next = text[i + 1];
+
                 if (c === '"') {
-                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; } 
-                    else { inQuotes = !inQuotes; }
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
                 } else if (c === ',' && !inQuotes) {
                     row.push('');
                 } else if ((c === '\r' || c === '\n') && !inQuotes) {
-                    if (c === '\r' && next === '\n') { i++; }
+                    if (c === '\r' && next === '\n') i++;
                     lines.push(row);
                     row = [''];
                 } else {
                     row[row.length - 1] += c;
                 }
             }
+
             if (row.length > 1 || row[0] !== '') {
                 lines.push(row);
             }
+
             return lines;
         }
 
         async function importFromGoogleSheets(silent = false) {
             const baseUrl = document.getElementById('sheets-csv-url').value.trim();
+
             if (!baseUrl) {
-                if (!silent) showToast("Please paste a valid sheet CSV URL", "alert-triangle");
+                if (!silent) showToast("Please paste a valid Google Apps Script URL", "alert-circle");
                 return;
             }
 
-            if (!baseUrl.startsWith('https://docs.google.com/spreadsheets/') && !baseUrl.startsWith('https://script.google.com/')) {
-                if (!silent) showToast("Invalid Sync URL (Must be Google Sheets or Apps Script)", "alert-triangle");
+            if (!baseUrl.startsWith('https://script.google.com/') && !baseUrl.startsWith('https://docs.google.com/')) {
+                if (!silent) showToast("Invalid URL format. Must be Google Sheets or Apps Script", "alert-circle");
                 return;
             }
 
-            // Append a cache-buster parameter to guarantee instant updates on reload
             const fetchUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
 
             try {
-                if (!silent) showToast("Syncing Google Sheet Database...", "clock");
-                renderSkeletons(); 
+                if (!silent) showToast("Syncing catalog data...", "loader");
+                renderSkeletons();
 
-                const res = await fetch(fetchUrl);
-                if (!res.ok) throw new Error("Network response error fetching CSV file.");
-                const text = await res.text();
-                
+                const response = await fetch(fetchUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const text = await response.text();
                 const rows = parseCSV(text);
+
                 if (rows.length < 2) {
-                    throw new Error("Invalid format. Ensure you have a header row and product items.");
+                    throw new Error("No data found. Ensure sheet has headers and products.");
                 }
 
                 const headers = rows[0].map(h => h.toLowerCase().trim());
@@ -364,38 +494,36 @@
 
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.length < headers.length) continue; 
-                    
+                    if (!row || row.length === 0 || row.every(cell => !cell)) continue;
+
                     const item = {};
-                    headers.forEach((header, index) => {
-                        item[header] = row[index] ? row[index].trim() : '';
+                    headers.forEach((header, idx) => {
+                        item[header] = row[idx] ? row[idx].trim() : '';
                     });
 
                     parsedProducts.push({
                         id: Number(item.id) || i,
-                        name: item.name || `Stitched Masterpiece #${i}`,
+                        name: item.name || `Product #${i}`,
                         category: item.category ? item.category.toLowerCase().trim() : 'accessories',
-                        price: Number(item.price) || 0.00,
-                        stock: item.stock !== undefined ? Number(item.stock) : 5,
-                        image: item.image || "https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=600",
-                        description: item.description || "A gorgeous custom hand-crafted design crafted with comfort fibers.",
+                        price: Number(item.price) || 0,
+                        stock: Number(item.stock) || 0,
+                        image: item.image || "https://images.unsplash.com/photo-1520763185298-1b434c919eba?auto=format&fit=crop&q=80&w=600",
+                        description: item.description || "Beautiful handmade product.",
                         badge: item.badge || ""
                     });
                 }
 
                 if (parsedProducts.length > 0) {
                     productData = parsedProducts;
-                    localStorage.setItem('cozy_sheets_url', baseUrl); 
+                    localStorage.setItem('nova_sheets_url', baseUrl);
                     renderCatalog();
-                    showToast(`Successfully synced ${parsedProducts.length} items!`, "check");
+                    showToast(`Synced ${parsedProducts.length} products!`, "check");
                 } else {
-                    throw new Error("No readable products found in the sheet.");
+                    throw new Error("No valid products found in sheet");
                 }
             } catch (err) {
-                console.error(err);
-                if (!silent) {
-                    showToast("Failed to fetch sheet. Check publishing configuration.", "alert-triangle");
-                }
+                console.error('Sheet sync error:', err);
+                if (!silent) showToast("Failed to sync: " + err.message, "alert-circle");
                 renderCatalog();
             }
         }
@@ -403,179 +531,190 @@
         function clearSheetsData() {
             productData = [];
             document.getElementById('sheets-csv-url').value = "";
-            localStorage.removeItem('cozy_sheets_url');
+            localStorage.removeItem('nova_sheets_url');
             renderCatalog();
-            showToast("Sheet configuration URL cleared", "trash");
+            showToast("Sheet data cleared", "trash-2");
         }
 
+        // ============================================
+        // DEMO DATA
+        // ============================================
         function loadSampleDrafts() {
             productData = [
                 {
                     id: 1,
-                    name: "Amigurumi Chubby Bumblebee",
-                    category: "plushies",
-                    price: 24.99,
-                    stock: 8,
-                    image: "https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=600",
-                    description: "Hand-stitched super soft plush velvet bee.",
-                    badge: "Best Seller"
+                    name: "Handmade Cozy Blanket",
+                    category: "home",
+                    price: 45.99,
+                    stock: 5,
+                    image: "https://images.unsplash.com/photo-1577720643272-265f434b0f12?auto=format&fit=crop&q=80&w=600",
+                    description: "Soft and warm handmade crochet blanket perfect for cozy nights.",
+                    badge: "New"
                 },
                 {
                     id: 2,
-                    name: "Cottagecore Sunflower Coaster Set",
-                    category: "home",
-                    price: 18.50,
-                    stock: 15,
-                    image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&q=80&w=600",
-                    description: "Set of 4 absorbent floral crochet coasters.",
+                    name: "Amigurumi Bunny Plush",
+                    category: "amigurumi",
+                    price: 28.50,
+                    stock: 12,
+                    image: "https://images.unsplash.com/photo-1520763185298-1b434c919eba?auto=format&fit=crop&q=80&w=600",
+                    description: "Adorable hand-stitched bunny plushie with soft yarn.",
                     badge: "Popular"
+                },
+                {
+                    id: 3,
+                    name: "Winter Beanie Hat",
+                    category: "accessories",
+                    price: 22.00,
+                    stock: 18,
+                    image: "https://images.unsplash.com/photo-1539368617333-04d4e3b03d64?auto=format&fit=crop&q=80&w=600",
+                    description: "Warm handmade beanie in various colors.",
+                    badge: ""
+                },
+                {
+                    id: 4,
+                    name: "Chunky Knit Sweater",
+                    category: "apparel",
+                    price: 65.00,
+                    stock: 3,
+                    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=600",
+                    description: "Premium hand-knitted oversized sweater.",
+                    badge: "Limited"
                 }
             ];
             renderCatalog();
-            showToast("Temporary sample draft loaded!", "check");
+            showToast("Demo data loaded successfully!", "check");
         }
 
-        // Render skeleton loaders for a smooth transition during network requests
+        // ============================================
+        // CATALOG RENDERING
+        // ============================================
         function renderSkeletons() {
             emptyState.classList.add('hidden');
-            let skeletons = '';
-            for (let i = 0; i < 4; i++) {
-                skeletons += `
-                    <div class="animate-pulse bg-white dark:bg-stone-800 rounded-2xl p-4 border border-stone-100 dark:border-stone-700 space-y-4">
-                        <div class="bg-stone-200 dark:bg-stone-700 rounded-xl aspect-square w-full"></div>
-                        <div class="h-4 bg-stone-200 dark:bg-stone-700 rounded w-1/3"></div>
-                        <div class="h-6 bg-stone-200 dark:bg-stone-700 rounded w-3/4"></div>
-                        <div class="h-3 bg-stone-200 dark:bg-stone-700 rounded w-full"></div>
-                        <div class="h-8 bg-stone-100 dark:bg-stone-700/50 rounded w-full mt-2"></div>
+            let html = '';
+            for (let i = 0; i < 8; i++) {
+                html += `
+                    <div class="animate-pulse bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 space-y-4">
+                        <div class="bg-slate-200 dark:bg-slate-700 rounded-lg aspect-square w-full"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/5"></div>
+                        <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded w-4/5"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                        <div class="h-8 bg-slate-100 dark:bg-slate-700 rounded w-full"></div>
                     </div>
                 `;
             }
-            productGrid.innerHTML = skeletons;
+            productGrid.innerHTML = html;
         }
 
         function renderCatalog() {
-            let filteredProducts = productData.filter(product => {
-                const matchesSearch = product.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
-                                      product.category.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                                      (product.badge && product.badge.toLowerCase().includes(searchFilter.toLowerCase())) ||
-                                      product.description.toLowerCase().includes(searchFilter.toLowerCase());
-                const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-                return matchesSearch && matchesCategory;
+            let filtered = productData.filter(product => {
+                const searchMatch = product.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                    product.description.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                    (product.badge && product.badge.toLowerCase().includes(searchFilter.toLowerCase()));
+
+                const categoryMatch = selectedCategory === "all" || product.category === selectedCategory;
+
+                return searchMatch && categoryMatch;
             });
 
+            // Apply sorting
             if (activeSort === "price-asc") {
-                filteredProducts.sort((a, b) => a.price - b.price);
+                filtered.sort((a, b) => a.price - b.price);
             } else if (activeSort === "price-desc") {
-                filteredProducts.sort((a, b) => b.price - a.price);
+                filtered.sort((a, b) => b.price - a.price);
             } else if (activeSort === "stock-desc") {
-                filteredProducts.sort((a, b) => b.stock - a.stock);
+                filtered.sort((a, b) => b.stock - a.stock);
+            } else if (activeSort === "popular") {
+                filtered.sort((a, b) => (b.stock > 10 ? 1 : -1) - (a.stock > 10 ? 1 : -1));
             }
 
-            if (filteredProducts.length === 0) {
+            // Render empty or products
+            if (filtered.length === 0) {
                 productGrid.innerHTML = "";
                 emptyState.classList.remove('hidden');
-                emptyState.classList.add('flex');
-                resultsBadge.textContent = "0 cozy stitches found";
+                resultsBadge.textContent = "No products found";
                 return;
-            } else {
-                emptyState.classList.add('hidden');
-                emptyState.classList.remove('flex');
-                resultsBadge.textContent = `Showing ${filteredProducts.length} cozy creations`;
             }
 
-            productGrid.innerHTML = filteredProducts.map(product => {
-                const isOutOfStock = product.stock === 0;
-                
-                let badgeClass = "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-900";
-                if (isOutOfStock) {
-                    badgeClass = "bg-stone-200 text-stone-600 dark:bg-stone-800 dark:text-stone-400 border border-stone-300 dark:border-stone-700";
-                } else if (product.stock <= 5) {
-                    badgeClass = "bg-amber-100 text-amber-850 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-900";
-                }
+            emptyState.classList.add('hidden');
+            resultsBadge.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
 
-                return `
-                    <div class="product-card bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col ov[...]
-                        
-                        <!-- 1. PRODUCT IMAGE WITH STOCK BADGE OVERLAY -->
-                        <div class="image-container bg-[#fcf9f5] dark:bg-stone-850">
-                            <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format[...]
-                            ${product.badge ? `
-                                <div class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold shadow-md bg-white/95 dark:bg-stone-950/95 text-rose-600 dark:text-rose-400 tracki[...]
-                                    ${product.badge}
-                                </div>
-                            ` : ''}
-                        </div>
-
-                        <!-- CARD CONTENT CONTAINER -->
-                        <div class="p-4 flex flex-col flex-grow">
-                            <!-- Category Badge -->
-                            <div class="mb-1">
-                                <span class="text-[10px] tracking-wider font-extrabold uppercase text-amber-600 dark:text-amber-400">
-                                    🧶 ${product.category}
-                                </span>
-                            </div>
-
-                            <!-- 2. PRICE TAG (Respects Visibility Toggle) -->
-                            <div class="price-holder mb-1 transition-all duration-300 h-8 flex items-center">
-                                ${showPrices ? `
-                                    <span class="text-xl font-black text-stone-900 dark:text-white">₹${product.price.toFixed(2)}</span>
-                                ` : `
-                                    <span class="text-xs text-stone-400 dark:text-stone-500 italic flex items-center gap-1.5">
-                                        <i data-lucide="eye-off" class="w-3.5 h-3.5"></i> Price Hidden
-                                    </span>
-                                `}
-                            </div>
-
-                            <!-- 3. PRODUCT NAME -->
-                            <h3 class="font-bold text-stone-800 dark:text-white text-base leading-tight mb-2 line-clamp-2 hover:text-rose-600 dark:hover:text-rose-400 transition duration-150">
-                                ${product.name}
-                            </h3>
-
-                            <!-- Description -->
-                            <p class="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 mb-4">
-                                ${product.description}
-                            </p>
-
-                            <!-- 4. STOCK VALUE / STATUS (Placed neatly at the bottom) -->
-                            <div class="mt-auto pt-3 border-t border-stone-100 dark:border-stone-700 flex items-center justify-between">
-                                <span class="text-[10px] tracking-wide font-semibold text-stone-400 dark:text-stone-500 uppercase">Availability</span>
-                                <span class="text-[11px] px-2.5 py-0.5 rounded-full font-bold ${badgeClass}">
-                                    ${isOutOfStock ? 'Sold Out' : `${product.stock} left in store`}
-                                </span>
-                            </div>
-                        </div>
-
-                    </div>
-                `;
-            }).join('');
-            
+            productGrid.innerHTML = filtered.map(product => renderProductCard(product)).join('');
             lucide.createIcons();
         }
 
-        function getBase64Image(imgUrl) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.setAttribute('crossOrigin', 'anonymous');
-                img.onload = function () {
-                    try {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = this.width;
-                        canvas.height = this.height;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(this, 0, 0);
-                        const dataURL = canvas.toDataURL("image/jpeg", 0.7);
-                        resolve(dataURL);
-                    } catch (e) {
-                        resolve(null); 
-                    }
-                };
-                img.onerror = function () {
-                    resolve(null); 
-                };
-                img.src = imgUrl;
-            });
+        function renderProductCard(product) {
+            const isOutOfStock = product.stock === 0;
+            const isLowStock = product.stock > 0 && product.stock <= 5;
+
+            let stockBadgeClass = "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300";
+            if (isOutOfStock) {
+                stockBadgeClass = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 font-semibold";
+            } else if (isLowStock) {
+                stockBadgeClass = "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 font-semibold";
+            }
+
+            return `
+                <div class="product-card group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
+                    
+                    <!-- Image Container -->
+                    <div class="image-container relative">
+                        <img src="${product.image}" alt="${product.name}" loading="lazy" class="w-full h-full object-cover"
+                            onerror="this.src='https://images.unsplash.com/photo-1520763185298-1b434c919eba?auto=format&fit=crop&q=80&w=600';"
+                        >
+                        ${product.badge ? `
+                            <div class="absolute top-3 left-3 bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                                ${product.badge}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Card Content -->
+                    <div class="p-4 flex flex-col flex-grow">
+                        <!-- Category -->
+                        <div class="mb-2">
+                            <span class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
+                                🧶 ${product.category}
+                            </span>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="price-section mb-2 h-6 flex items-center">
+                            ${showPrices ? `
+                                <span class="text-lg font-bold text-slate-900 dark:text-white">₹${product.price.toFixed(2)}</span>
+                            ` : `
+                                <span class="text-xs text-slate-400 dark:text-slate-500 italic flex items-center gap-1">
+                                    <i data-lucide="eye-off" class="w-3 h-3"></i> Price Hidden
+                                </span>
+                            `}
+                        </div>
+
+                        <!-- Product Name -->
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base line-clamp-2 mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                            ${product.name}
+                        </h3>
+
+                        <!-- Description -->
+                        <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-3 flex-grow">
+                            ${product.description}
+                        </p>
+
+                        <!-- Stock Status -->
+                        <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Stock</span>
+                            <span class="text-xs px-3 py-1 rounded-full font-bold ${stockBadgeClass}">
+                                ${isOutOfStock ? 'Out of Stock' : `${product.stock} available`}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            `;
         }
 
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
         function handleSearch() {
             searchFilter = document.getElementById('search-input').value;
             renderCatalog();
@@ -587,71 +726,68 @@
         }
 
         function handleSort() {
-            const mobileSelect = document.getElementById('sort-select');
-            const desktopSelect = document.getElementById('sort-select-desktop');
-            
-            if (window.innerWidth >= 768) {
-                activeSort = desktopSelect.value;
-                mobileSelect.value = desktopSelect.value;
-            } else {
-                activeSort = mobileSelect.value;
-                desktopSelect.value = mobileSelect.value;
-            }
-            renderCatalog();
-        }
+            const mobileSort = document.getElementById('sort-select-mobile');
+            const desktopSort = document.getElementById('sort-select-desktop');
 
-        function resetFilters() {
-            document.getElementById('search-input').value = "";
-            document.getElementById('category-filter').value = "all";
-            searchFilter = "";
-            selectedCategory = "all";
-            activeSort = "default";
-            document.getElementById('sort-select').value = "default";
-            document.getElementById('sort-select-desktop').value = "default";
+            if (window.innerWidth >= 768 && desktopSort) {
+                activeSort = desktopSort.value;
+                if (mobileSort) mobileSort.value = activeSort;
+            } else if (mobileSort) {
+                activeSort = mobileSort.value;
+                if (desktopSort) desktopSort.value = activeSort;
+            }
+
             renderCatalog();
-            showToast("Filters successfully reset", "check");
         }
 
         function togglePriceVisibility() {
             showPrices = !showPrices;
-            
+
+            const priceText = document.getElementById('price-toggle-text');
+            const mobileText = document.getElementById('price-toggle-text-mobile');
+            const priceIcon = document.getElementById('price-icon');
+            const mobileIcon = document.getElementById('price-icon-mobile');
+
             if (showPrices) {
-                priceToggleText.textContent = "Hide Prices";
-                priceToggleTextMobile.textContent = "Hide Prices";
-                priceIcon.setAttribute('data-lucide', 'eye-off');
-                priceIconMobile.setAttribute('data-lucide', 'eye-off');
-                showToast("Prices are now shown", "eye");
+                if (priceText) priceText.textContent = "Hide Prices";
+                if (mobileText) mobileText.textContent = "Hide";
+                if (priceIcon) priceIcon.setAttribute('data-lucide', 'eye-off');
+                if (mobileIcon) mobileIcon.setAttribute('data-lucide', 'eye-off');
+                showToast("Prices are visible", "eye");
             } else {
-                priceToggleText.textContent = "Show Prices";
-                priceToggleTextMobile.textContent = "Show Prices";
-                priceIcon.setAttribute('data-lucide', 'eye');
-                priceIconMobile.setAttribute('data-lucide', 'eye');
-                showToast("Prices hidden successfully", "eye-off");
+                if (priceText) priceText.textContent = "Show Prices";
+                if (mobileText) mobileText.textContent = "Show";
+                if (priceIcon) priceIcon.setAttribute('data-lucide', 'eye');
+                if (mobileIcon) mobileIcon.setAttribute('data-lucide', 'eye');
+                showToast("Prices are hidden", "eye-off");
             }
-            
+
+            lucide.createIcons();
             renderCatalog();
         }
 
-        function toggleDarkMode(forceDark = null) {
-            const root = document.documentElement;
-            if (forceDark !== null) {
-                isDarkMode = forceDark;
+        function toggleDarkMode(force = null) {
+            const html = document.documentElement;
+
+            if (force !== null) {
+                isDarkMode = force;
             } else {
                 isDarkMode = !isDarkMode;
             }
 
             const desktopIcon = document.getElementById('theme-icon-desktop');
-            const mobileIcon = document.getElementById('theme-icon');
+            const mobileIcon = document.getElementById('theme-icon-mobile');
 
             if (isDarkMode) {
-                root.classList.add('dark');
-                desktopIcon.setAttribute('data-lucide', 'sun');
-                mobileIcon.setAttribute('data-lucide', 'sun');
+                html.classList.add('dark');
+                if (desktopIcon) desktopIcon.setAttribute('data-lucide', 'sun');
+                if (mobileIcon) mobileIcon.setAttribute('data-lucide', 'sun');
             } else {
-                root.classList.remove('dark');
-                desktopIcon.setAttribute('data-lucide', 'moon');
-                mobileIcon.setAttribute('data-lucide', 'moon');
+                html.classList.remove('dark');
+                if (desktopIcon) desktopIcon.setAttribute('data-lucide', 'moon');
+                if (mobileIcon) mobileIcon.setAttribute('data-lucide', 'moon');
             }
+
             lucide.createIcons();
         }
 
@@ -664,146 +800,140 @@
             toastIcon.setAttribute('data-lucide', iconName);
             lucide.createIcons();
 
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-32', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
 
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-32', 'opacity-0');
             }, 3000);
+        }
+
+        // ============================================
+        // PDF EXPORT
+        // ============================================
+        async function getBase64Image(imgUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.setAttribute('crossOrigin', 'anonymous');
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                    } catch (e) {
+                        resolve(null);
+                    }
+                };
+                img.onerror = () => resolve(null);
+                img.src = imgUrl;
+            });
         }
 
         async function exportToPDF() {
             if (productData.length === 0) {
-                showToast("Cannot export empty catalogue!", "alert-triangle");
+                showToast("No products to export!", "alert-circle");
                 return;
             }
-            
-            showToast("Structuring high-res image catalog...", "clock");
-            
+
+            showToast("Generating PDF...", "loader");
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'pt', 'a4');
-            
-            const titleText = "COZYSTITCHES - OFFICIAL HANDMADE CATALOGUE";
-            const filterInfo = `Category: ${selectedCategory.toUpperCase()} | Search Filter: "${searchFilter || 'None'}"`;
-            
-            let yPos = 60;
+
+            let yPos = 50;
             const leftMargin = 40;
             const rightMargin = 555;
-            
-            doc.setFillColor(225, 29, 72); 
-            doc.rect(leftMargin, yPos, 515, 55, 'F');
-            
+
+            // Header
+            doc.setFillColor(168, 85, 247);
+            doc.rect(leftMargin, yPos, rightMargin - leftMargin, 50, 'F');
+
             doc.setTextColor(255, 255, 255);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(15);
-            doc.text("COZYSTITCHES CROCHET CATALOGUE", leftMargin + 15, yPos + 33);
-            
-            yPos += 80;
-            
-            doc.setTextColor(115, 115, 115);
-            doc.setFont("helvetica", "normal");
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('CROCHET NOVASTUDIO CATALOGUE', leftMargin + 15, yPos + 32);
+
+            yPos += 70;
+
+            // Filter info
+            doc.setTextColor(80, 80, 80);
+            doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
-            doc.text(`Generated on: ${new Date().toLocaleDateString()} | Active Items`, leftMargin, yPos);
-            doc.text(filterInfo, leftMargin, yPos + 14);
-            
-            doc.setDrawColor(244, 63, 94);
-            doc.setLineWidth(1.5);
-            doc.line(leftMargin, yPos + 22, rightMargin, yPos + 22);
-            
-            yPos += 45;
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, leftMargin, yPos);
+            doc.text(`Category: ${selectedCategory.toUpperCase()}`, leftMargin, yPos + 15);
 
-            let currentProducts = productData.filter(product => {
-                const matchesSearch = product.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
-                                      product.category.toLowerCase().includes(searchFilter.toLowerCase());
-                const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-                return matchesSearch && matchesCategory;
-            });
+            doc.setDrawColor(168, 85, 247);
+            doc.setLineWidth(2);
+            doc.line(leftMargin, yPos + 25, rightMargin, yPos + 25);
 
-            if (activeSort === "price-asc") {
-                currentProducts.sort((a, b) => a.price - b.price);
-            } else if (activeSort === "price-desc") {
-                currentProducts.sort((a, b) => b.price - a.price);
-            } else if (activeSort === "stock-desc") {
-                currentProducts.sort((a, b) => b.stock - a.stock);
-            }
+            yPos += 40;
 
-            const imagePromises = currentProducts.map(p => getBase64Image(p.image));
-            const base64Images = await Promise.all(imagePromises);
+            // Get products to export
+            let filtered = productData.filter(p => selectedCategory === "all" || p.category === selectedCategory);
 
-            for (let idx = 0; idx < currentProducts.length; idx++) {
-                const product = currentProducts[idx];
-                const base64Data = base64Images[idx];
+            const images = await Promise.all(filtered.map(p => getBase64Image(p.image)));
 
-                if (yPos > 720) {
+            // Products
+            for (let i = 0; i < filtered.length; i++) {
+                if (yPos > 700) {
                     doc.addPage();
-                    yPos = 50; 
+                    yPos = 40;
                 }
 
-                doc.setDrawColor(245, 245, 244);
-                doc.setFillColor(255, 255, 255);
-                doc.rect(leftMargin, yPos, 515, 75, 'F');
-                
+                const product = filtered[i];
+                const imgData = images[i];
+
+                // Product box
+                doc.setDrawColor(220, 220, 220);
+                doc.rect(leftMargin, yPos, rightMargin - leftMargin, 70, 'S');
+
+                // Image
                 const imgX = leftMargin + 10;
                 const imgY = yPos + 10;
-                const imgSize = 55;
+                const imgSize = 50;
 
-                if (base64Data) {
-                    try {
-                        doc.addImage(base64Data, 'JPEG', imgX, imgY, imgSize, imgSize);
-                    } catch (e) {
-                        doc.setDrawColor(220, 220, 220);
-                        doc.rect(imgX, imgY, imgSize, imgSize, 'S');
-                        doc.setFontSize(8);
-                        doc.setTextColor(150, 150, 150);
-                        doc.text("No Image", imgX + 10, imgY + 30);
-                    }
+                if (imgData) {
+                    doc.addImage(imgData, 'JPEG', imgX, imgY, imgSize, imgSize);
                 } else {
-                    doc.setFillColor(254, 244, 244);
+                    doc.setFillColor(245, 245, 245);
                     doc.rect(imgX, imgY, imgSize, imgSize, 'F');
-                    doc.setDrawColor(254, 205, 211);
-                    doc.rect(imgX, imgY, imgSize, imgSize, 'S');
+                    doc.setTextColor(150, 150, 150);
                     doc.setFontSize(8);
-                    doc.setTextColor(225, 29, 72);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("🧶 COZY", imgX + 10, imgY + 30);
+                    doc.text('[No Image]', imgX + 5, imgY + 25);
                 }
 
-                const textX = leftMargin + 75;
-                doc.setTextColor(41, 37, 36);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text(product.name.substring(0, 48), textX, yPos + 22);
+                // Text
+                const textX = imgX + imgSize + 15;
+                doc.setTextColor(30, 30, 30);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.text(product.name.substring(0, 45), textX, yPos + 20);
 
-                doc.setTextColor(120, 113, 108);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(8.5);
-                doc.text(`Category: ${product.category} | Stock: ${product.stock} items available`, textX, yPos + 38);
-                doc.text(product.description.substring(0, 75) + "...", textX, yPos + 51);
+                doc.setTextColor(80, 80, 80);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text(`Category: ${product.category} | Stock: ${product.stock}`, textX, yPos + 35);
+                doc.text(product.description.substring(0, 60), textX, yPos + 50);
 
-                const priceX = rightMargin - 75;
+                // Price
                 if (showPrices) {
-                    doc.setTextColor(225, 29, 72);
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(12);
-                    doc.text(`₹${product.price.toFixed(2)}`, priceX, yPos + 38);
-                } else {
-                    doc.setTextColor(168, 162, 158);
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(9);
-                    doc.text("Hidden", priceX, yPos + 38);
+                    doc.setTextColor(168, 85, 247);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.text(`₹${product.price.toFixed(2)}`, rightMargin - 50, yPos + 35);
                 }
 
-                doc.setDrawColor(245, 245, 244);
-                doc.setLineWidth(1);
-                doc.line(leftMargin, yPos + 75, rightMargin, yPos + 75);
-
-                yPos += 85;
+                yPos += 80;
             }
 
-            doc.save(`CozyStitches_${selectedCategory}_${new Date().toISOString().slice(0,10)}.pdf`);
-            showToast("PDF Catalog downloaded!", "download");
+            doc.save(`Crochet-NovaStudio_${new Date().toISOString().slice(0, 10)}.pdf`);
+            showToast("PDF exported successfully!", "check");
         }
     </script>
+
 </body>
 </html>
