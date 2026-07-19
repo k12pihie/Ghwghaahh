@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crochet NovaStudio Catalogue</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#f0d9ff',
+                            DEFAULT: '#a855f7',
+                            dark: '#7c3aed',
+                            bg: '#faf8ff',
+                            bgDark: '#1a1225',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #2d1b4e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d8b4fe;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #6d28d9;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .image-container {
+            position: relative;
+            padding-bottom: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        }
+        .dark .image-container {
+            background: linear-gradient(135deg, #2d1b4e 0%, #3d2463 100%);
+        }
+
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .product-card:hover .image-container img {
+            transform: scale(1.08);
+        }
+
+        .product-card {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .transition-smooth {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-bg text-slate-900 dark:bg-brand-bgDark dark:text-slate-100 transition-colors duration-200">
+
+    <header class="w-full bg-white dark:bg-slate-900 border-b border-purple-100 dark:border-purple-900/30 shadow-sm z-50 flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-2.5 rounded-xl shadow-lg">
+                            <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold bg-gradient-to-r from-purple-600 to-purple-500 dark:from-purple-400 dark:to-purple-300 bg-clip-text text-transparent">
+                                Crochet NovaStudio
+                            </h1>
+                            <p class="text-xs font-semibold text-purple-500 dark:text-purple-400">Catalogue Manager</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1 md:hidden">
+                        <button onclick="toggleSheetsPanel()" class="p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 text-purple-600 dark:text-purple-400" title="Sync Sheet">
+                            <i data-lucide="database" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Toggle Theme">
+                            <i id="theme-icon-mobile" data-lucide="moon" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2 flex-grow max-w-2xl md:mx-4">
+                    <div class="relative flex-grow">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            oninput="handleSearch()" 
+                            placeholder="Search products..." 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white placeholder-slate-500"
+                        >
+                    </div>
+
+                    <div class="relative min-w-[160px]">
+                        <select 
+                            id="category-filter" 
+                            onchange="handleFilter()" 
+                            class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white appearance-none cursor-pointer"
+                        >
+                            <option value="all">All Categories</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2">
+                    <button 
+                        onclick="toggleSheetsPanel()" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-smooth"
+                    >
+                        <i data-lucide="database" class="w-4 h-4"></i>
+                        <span>Sync Sheet</span>
+                    </button>
+
+                    <button 
+                        onclick="togglePriceVisibility()" 
+                        id="price-toggle-btn" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-smooth"
+                    >
+                        <i id="price-icon" data-lucide="eye-off" class="w-4 h-4"></i>
+                        <span id="price-toggle-text">Hide Prices</span>
+                    </button>
+
+                    <button onclick="toggleDarkMode()" class="p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-smooth">
+                        <i id="theme-icon-desktop" data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+
+                    <button 
+                        onclick="exportToPDF()" 
+                        class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg hover:from-purple-700 hover:to-purple-600 transition-smooth shadow-md"
+                    >
+                        <i data-lucide="file-pdf" class="w-4 h-4"></i>
+                        <span>Export 3x3 PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="sheets-sync-panel" class="hidden mt-4 p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-2.5 w-2.5 rounded-full bg-purple-500 animate-pulse"></span>
+                        <h4 class="font-bold text-sm text-slate-900 dark:text-slate-100">Connect Google Sheet Web App</h4>
+                    </div>
+                    <button onclick="toggleSheetsPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input 
+                        type="text" 
+                        id="sheets-csv-url" 
+                        placeholder="Paste Apps Script Web App URL here..." 
+                        class="flex-grow px-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                    <div class="flex gap-2">
+                        <button onclick="importFromGoogleSheets()" class="px-5 py-2 text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-smooth">
+                            Sync Now
+                        </button>
+                        <button onclick="clearSheetsData()" class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg transition-smooth">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 md:hidden">
+                <button 
+                    onclick="togglePriceVisibility()" 
+                    id="price-toggle-btn-mobile" 
+                    class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                >
+                    <i id="price-icon-mobile" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+                    <span id="price-toggle-text-mobile">Hide</span>
+                </button>
+
+                <select 
+                    id="sort-select-mobile" 
+                    onchange="handleSort()" 
+                    class="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-slate-700 dark:text-slate-300"
+                >
+                    <option value="default">Default</option>
+                    <option value="price-asc">Price ↑</option>
+                    <option value="price-desc">Price ↓</option>
+                </select>
+
+                <button 
+                    onclick="exportToPDF()" 
+                    class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                >
+                    <i data-lucide="file-pdf" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            
+            <div class="hidden md:flex items-center justify-between mb-6">
+                <div>
+                    <span id="results-badge" class="text-xs font-semibold px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/50">
+                        Loading...
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                        <i data-lucide="sort-asc" class="w-4 h-4"></i> Sort:
+                    </span>
+                    <select 
+                        id="sort-select-desktop" 
+                        onchange="handleSort()" 
+                        class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white"
+                    >
+                        <option value="default">Default Order</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Enhanced Responsive Device Columns Adaptive Grid layout layout adjustment -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 px-4 text-center">
+                <div class="bg-purple-100 dark:bg-purple-900/30 p-6 rounded-full text-purple-500 dark:text-purple-400 mb-6">
+                    <i data-lucide="package" class="w-16 h-16"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Catalog is Empty</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm max-w-md mx-auto mb-8">
+                    Connect your Google Sheet or load the preview data to display products.
+                </p>
+                <div class="flex gap-3">
+                    <button onclick="toggleSheetsPanel()" class="px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-500 rounded-lg shadow-md shadow-purple-500/20">
+                        Connect Sheet
+                    </button>
+                    <button onclick="loadSampleDrafts()" class="px-6 py-3 text-sm font-semibold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                        Load Demo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-32 opacity-0 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-lg shadow-2xl flex items-center gap-3 transition-all duration-300 toast z-50">
+        <i id="toast-icon" data-lucide="check" class="w-5 h-5"></i>
+        <span id="toast-msg">Success!</span>
+    </div>
+
+    <script>
+        let productData = [];
+        let showPrices = true;
+        let isDarkMode = false;
+        let searchFilter = "";
+        let selectedCategory = "all";
+        let activeSort = "default";
+
+        const productGrid = document.getElementById('product-grid');
+        const emptyState = document.getElementById('empty-state');
+        const resultsBadge = document.getElementById('results-badge');
+        const sheetsSyncPanel = document.getElementById('sheets-sync-panel');
+        const categoryFilter = document.getElementById('category-filter');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeDarkMode();
+            initializeSheets();
+            lucide.createIcons();
+        });
+
+        function initializeDarkMode() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                toggleDarkMode(true);
+            }
+        }
+
+        function initializeSheets() {
+            const DEFAULT_SHEET = "https://script.google.com/macros/s/AKfycbzujQiNQxe-JNNgstRzK8LhI3ImS6qp3eNyl3kl5ZBHFmTG-U0EPcTGds8011bzGBOzEQ/exec";
+            let savedUrl = localStorage.getItem('nova_sheets_url') || DEFAULT_SHEET;
+            document.getElementById('sheets-csv-url').value = savedUrl;
+            importFromGoogleSheets(true);
+        }
+
+        function toggleSheetsPanel() {
+            sheetsSyncPanel.classList.toggle('hidden');
+        }
+
+        function parseCSV(text) {
+            const lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                const next = text[i + 1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (c === ',' && !inQuotes) { row.push(''); }
+                else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    lines.push(row); row = [''];
+                } else { row[row.length - 1] += c; }
+            }
+            if (row.length > 1 || row[0] !== '') lines.push(row);
+            return lines;
+        }
+
+        // Feature: Automatically analyzes coming rows to update UI Category Dropdowns options dynamically
+        function analyzeAndPopulateCategories() {
+            const categories = new Set();
+            productData.forEach(p => {
+                if (p.category) categories.add(p.category.trim());
+            });
+
+            // Keep 'all', remove others, and reconstruct updated selection view
+            categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+            categories.forEach(cat => {
+                if(cat) {
+                    const opt = document.createElement('option');
+                    opt.value = cat.toLowerCase();
+                    opt.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+                    categoryFilter.appendChild(opt);
+                }
+            });
+            categoryFilter.value = selectedCategory;
+        }
+
+        async function importFromGoogleSheets(silent = false) {
+            const baseUrl = document.getElementById('sheets-csv-url').value.trim();
+            if (!baseUrl) return;
+
+            try {
+                if (!silent) showToast("Syncing with Google Database...", "loader");
+                renderSkeletons();
+
+                const response = await fetch(baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now());
+                if (!response.ok) throw new Error("Network issues");
+                
+                const text = await response.text();
+                const rows = parseCSV(text);
+                if (rows.length < 2) throw new Error("Empty spreadsheet records.");
+
+                const headers = rows[0].map(h => h.toLowerCase().trim());
+                const parsedProducts = [];
+
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0 || row.every(cell => !cell)) continue;
+
+                    const item = {};
+                    headers.forEach((header, idx) => { item[header] = row[idx] ? row[idx].trim() : ''; });
+
+                    parsedProducts.push({
+                        id: Number(item.id) || i,
+                        name: item.name || `Product #${i}`,
+                        category: item.category || 'general',
+                        price: Number(item.price) || 0,
+                        stock: Number(item.stock) || 0,
+                        image: item.image || "https://images.unsplash.com/photo-1520763185298-1b434c919eba?w=600",
+                        description: item.description || "Premium handmade product.",
+                        badge: item.badge || ""
+                    });
+                }
+
+                if (parsedProducts.length > 0) {
+                    productData = parsedProducts;
+                    localStorage.setItem('nova_sheets_url', baseUrl);
+                    analyzeAndPopulateCategories();
+                    renderCatalog();
+                    if (!silent) showToast(`Synced ${parsedProducts.length} items successfully!`, "check");
+                }
+            } catch (err) {
+                console.error(err);
+                if (!silent) showToast("Sync failed. Using backup parameters.", "alert-circle");
+                loadSampleDrafts();
+            }
+        }
+
+        function clearSheetsData() {
+            productData = [];
+            document.getElementById('sheets-csv-url').value = "";
+            localStorage.removeItem('nova_sheets_url');
+            categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+            renderCatalog();
+            showToast("Database mapping cleared.", "trash-2");
+        }
+
+        function loadSampleDrafts() {
+            productData = [
+                { id: 1, name: "Handmade Cozy Blanket", category: "home", price: 3499, stock: 5, image: "https://images.unsplash.com/photo-1577720643272-265f434b0f12?w=600", description: "Soft and warm handmade crochet blanket perfect for cozy nights.", badge: "New" },
+                { id: 2, name: "Amigurumi Bunny Plush", category: "toys", price: 1250, stock: 12, image: "https://images.unsplash.com/photo-1520763185298-1b434c919eba?w=600", description: "Adorable hand-stitched bunny plushie with soft yarn.", badge: "Popular" },
+                { id: 3, name: "Winter Beanie Hat", category: "apparel", price: 899, stock: 18, image: "https://images.unsplash.com/photo-1539368617333-04d4e3b03d64?w=600", description: "Warm handmade beanie in various colors.", badge: "" },
+                { id: 4, name: "Chunky Knit Sweater", category: "apparel", price: 4999, stock: 3, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600", description: "Premium hand-knitted oversized sweater.", badge: "Limited" }
+            ];
+            analyzeAndPopulateCategories();
+            renderCatalog();
+        }
+
+        function renderSkeletons() {
+            emptyState.classList.add('hidden');
+            productGrid.innerHTML = Array(6).fill(0).map(() => `
+                <div class="animate-pulse bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div class="bg-slate-200 dark:bg-slate-700 rounded-lg aspect-square w-full"></div>
+                    <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/5"></div>
+                    <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded w-4/5"></div>
+                </div>
+            `).join('');
+        }
+
+        function renderCatalog() {
+            let filtered = productData.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchFilter.toLowerCase()) || p.description.toLowerCase().includes(searchFilter.toLowerCase());
+                const matchesCategory = selectedCategory === "all" || p.category.toLowerCase() === selectedCategory.toLowerCase();
+                return matchesSearch && matchesCategory;
+            });
+
+            if (activeSort === "price-asc") filtered.sort((a, b) => a.price - b.price);
+            if (activeSort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+
+            if (filtered.length === 0) {
+                productGrid.innerHTML = "";
+                emptyState.classList.remove('hidden');
+                resultsBadge.textContent = "0 items found";
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            resultsBadge.textContent = `${filtered.length} Product${filtered.length !== 1 ? 's' : ''}`;
+            
+            productGrid.innerHTML = filtered.map(product => {
+                const isLowStock = product.stock > 0 && product.stock <= 5;
+                return `
+                    <div class="product-card group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-smooth flex flex-col overflow-hidden">
+                        <div class="image-container">
+                            <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1520763185298-1b434c919eba?w=600';">
+                            ${product.badge ? `<span class="absolute top-2 left-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">${product.badge}</span>` : ''}
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <span class="text-[10px] font-bold text-purple-500 uppercase tracking-wider mb-1">${product.category}</span>
+                            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1 group-hover:text-purple-500 transition-colors">${product.name}</h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 mt-1 mb-3 flex-grow">${product.description}</p>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
+                                <span class="text-sm font-black text-slate-900 dark:text-white">${showPrices ? '₹' + product.price.toLocaleString('en-IN') : '₹ --'}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${product.stock === 0 ? 'bg-red-100 text-red-700' : isLowStock ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}">
+                                    ${product.stock === 0 ? 'Out of Stock' : `${product.stock} Left`}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function handleSearch() { searchFilter = document.getElementById('search-input').value; renderCatalog(); }
+        function handleFilter() { selectedCategory = categoryFilter.value; renderCatalog(); }
+        function handleSort() {
+            const mobileSort = document.getElementById('sort-select-mobile');
+            const desktopSort = document.getElementById('sort-select-desktop');
+            activeSort = window.innerWidth >= 768 ? desktopSort.value : mobileSort.value;
+            renderCatalog();
+        }
+
+        function togglePriceVisibility() {
+            showPrices = !showPrices;
+            document.getElementById('price-toggle-text').textContent = showPrices ? "Hide Prices" : "Show Prices";
+            renderCatalog();
+        }
+
+        function toggleDarkMode(force = null) {
+            isDarkMode = force !== null ? force : !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        }
+
+        function showToast(message, iconName = "check") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = message;
+            document.getElementById('toast-icon').setAttribute('data-lucide', iconName);
+            lucide.createIcons();
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 2500);
+        }
+
+        // ============================================
+        // CLEAN & DISTORTION-FREE 3x3 MATRIX PDF EXPORT
+        // ============================================
+        async function getSafeBase64Image(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.setAttribute('crossOrigin', 'anonymous');
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 300;
+                    canvas.height = img.naturalHeight || 300;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve({ data: canvas.toDataURL('image/jpeg', 0.8), w: canvas.width, h: canvas.height });
+                };
+                img.onerror = () => resolve(null);
+                img.src = url;
+            });
+        }
+
+        async function exportToPDF() {
+            if (!productData.length) return showToast("No items available to print", "alert-circle");
+
+            try {
+                showToast("Building aesthetic grid...", "loader");
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                
+                // Layout Configuration (3x3 Matrix grid Structure)
+                const marginX = 12;
+                const marginY = 16;
+                const gap = 8;
+                const columns = 3;
+                const rowsPerPage = 3;
+                const itemsPerPage = columns * rowsPerPage;
+
+                // Dynamic dimension mapping metrics calculations
+                const cellWidth = (pageWidth - (marginX * 2) - (gap * (columns - 1))) / columns;
+                const cellHeight = (pageHeight - (marginY * 2) - (gap * (rowsPerPage - 1))) / rowsPerPage;
+
+                // Load base64 frames concurrently asynchronously
+                const resolvedImages = await Promise.all(productData.map(p => getSafeBase64Image(p.image)));
+
+                productData.forEach((product, idx) => {
+                    const pageItemIndex = idx % itemsPerPage;
+                    
+                    if (idx > 0 && pageItemIndex === 0) {
+                        doc.addPage();
+                    }
+
+                    const col = pageItemIndex % columns;
+                    const row = Math.floor(pageItemIndex / columns);
+
+                    const x = marginX + col * (cellWidth + gap);
+                    const y = marginY + row * (cellHeight + gap);
+
+                    // Cell Background structure box
+                    doc.setFillColor(255, 255, 255);
+                    doc.setDrawColor(243, 232, 255);
+                    doc.setLineWidth(0.25);
+                    doc.rect(x, y, cellWidth, cellHeight, 'FD');
+
+                    // Photo bounding space
+                    const boxImgWidth = cellWidth - 6;
+                    const boxImgHeight = cellHeight * 0.48;
+                    const imgX = x + 3;
+                    const imgY = y + 3;
+
+                    const imgObj = resolvedImages[idx];
+                    if (imgObj) {
+                        // Anti-stretching proportional rendering logic
+                        const imgRatio = imgObj.w / imgObj.h;
+                        const targetRatio = boxImgWidth / boxImgHeight;
+                        let renderW = boxImgWidth;
+                        let renderH = boxImgHeight;
+                        let offsetX = 0;
+                        let offsetY = 0;
+
+                        if (imgRatio > targetRatio) {
+                            renderH = boxImgWidth / imgRatio;
+                            offsetY = (boxImgHeight - renderH) / 2;
+                        } else {
+                            renderW = boxImgHeight * imgRatio;
+                            offsetX = (boxImgWidth - renderW) / 2;
+                        }
+                        doc.addImage(imgObj.data, 'JPEG', imgX + offsetX, imgY + offsetY, renderW, renderH);
+                    } else {
+                        doc.setFillColor(248, 250, 252);
+                        doc.rect(imgX, imgY, boxImgWidth, boxImgHeight, 'F');
+                    }
+
+                    // Content Typography Placement Section
+                    const textContentY = imgY + boxImgHeight + 4;
+                    
+                    // Name Tag configuration
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(9);
+                    const cleanTitle = product.name.replace(/[^\x00-\x7F]/g, "");
+                    doc.text(doc.splitTextToSize(cleanTitle, cellWidth - 6)[0], x + 3, textContentY);
+
+                    // Category text metadata line
+                    doc.setTextColor(168, 85, 247);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(7);
+                    doc.text(product.category.toUpperCase(), x + 3, textContentY + 4.5);
+
+                    // Description text block insertion
+                    doc.setTextColor(100, 116, 139);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(7);
+                    const cleanDesc = product.description.replace(/[^\x00-\x7F]/g, "");
+                    const splitDesc = doc.splitTextToSize(cleanDesc, cellWidth - 6);
+                    doc.text(splitDesc.slice(0, 2).join(" "), x + 3, textContentY + 9);
+
+                    // Bottom alignment pricing layout matrix placement row element
+                    const priceRowY = y + cellHeight - 4;
+                    if (showPrices) {
+                        doc.setTextColor(15, 23, 42);
+                        doc.setFont("helvetica", "bold");
+                        doc.setFontSize(10);
+                        doc.text(`INR ${product.price.toLocaleString('en-IN')}`, x + 3, priceRowY);
+                    } else {
+                        doc.setTextColor(148, 163, 184);
+                        doc.setFont("helvetica", "italic");
+                        doc.setFontSize(8);
+                        doc.text("Price Hidden", x + 3, priceRowY);
+                    }
+
+                    // Stock condition status badge element text rendering
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(7);
+                    if (product.stock === 0) {
+                        doc.setTextColor(239, 68, 68);
+                        doc.text("OUT OF STOCK", x + cellWidth - 3, priceRowY, { align: "right" });
+                    } else {
+                        doc.setTextColor(34, 197, 94);
+                        doc.text(`${product.stock} ITEMS`, x + cellWidth - 3, priceRowY, { align: "right" });
+                    }
+                });
+
+                doc.save('NovaStudio-3x3-Catalogue.pdf');
+                showToast("Perfect PDF exported!", "check");
+            } catch (err) {
+                console.error(err);
+                showToast("PDF composition failed.", "alert-circle");
+            }
+        }
+    </script>
+</body>
+</html>
